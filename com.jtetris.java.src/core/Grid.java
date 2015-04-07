@@ -6,38 +6,54 @@ import controller.Signal;
 
 public class Grid {
 
+	// Class fields.
+	// ------------------------------------------------------------	
 	private final static int WIDTH = 10;
 	private final static int HEIGHT = 22;
 	
+
+	// Instance fields.
+	// ------------------------------------------------------------
 	private Color[][] grid;
-	
 	private Tetris tetris;
 	private int tetrisX;
 	private int tetrisY;
-	
-	private boolean active;
-	
+
+
+	// Constructors.
+	// ------------------------------------------------------------
 	public Grid () {
 		this.grid = new Color[HEIGHT][WIDTH];
 		this.tetris = null;
 		this.tetrisX = this.tetrisY = -1;
-		this.active = true;
 	}
+
 	
-	
+	// Class methods.
+	// ------------------------------------------------------------
 	public static int GridWidth() { return Grid.WIDTH; }
 	public static int GridHeight() { return Grid.HEIGHT; } 
 	
-	public Tetris getTetris() { return this.tetris; }
-	public int tetrisX() { return this.tetrisX; }
-	public int tetrisY() { return this.tetrisY; }
 
+	// Instance methods.
+	// ------------------------------------------------------------
+	
+	/**
+	 * Return true if there is a block at the specified position on the grid.
+	 * @param x: x position
+	 * @param y: y position
+	 * @return boolean.
+	 */
 	public Color blockAt(int x, int y) {
 		if (this.grid == null) throw new NullPointerException("No grid yet.");
 		if (this.grid[y][x] != null) return this.grid[y][x];
 		return null;
 	}
 	
+	/**
+	 * Perform some action on the grid as the result of a user input.
+	 * @param s: the user input.
+	 */
 	public void userAction (Signal s){
 		
 		switch(s){
@@ -75,6 +91,14 @@ public class Grid {
 		
 	}
 	
+	/**
+	 * Return true if the specified tetris located at position (tx, ty) is touching the
+	 * left or right wall.
+	 * @param t; tetris
+	 * @param tx: x-position of tetris
+	 * @param ty: y-position of tetris
+	 * @return boolean
+	 */
 	public boolean touchingWall (Tetris t, int tx, int ty) {
 		for (int y = ty; y < ty + t.getWidth(); y++) {
 			for (int x = tx; x < tx + t.getWidth(); x++) {
@@ -83,7 +107,15 @@ public class Grid {
 		}
 		return false;
 	}
-	
+
+	/**
+	 * Return true if the specified tetris located at position (tx, ty) is touching the
+	 * floor.
+	 * @param t: tetris
+	 * @param tx: x-position of tetris
+	 * @param ty: y-position of tetris
+	 * @return boolean
+	 */
 	public boolean touchingFloor (Tetris t, int tx, int ty) {
 		for (int y = ty; y < ty + t.getWidth(); y++) {
 			for (int x = tx; x < tx + t.getWidth(); x++) {
@@ -93,6 +125,14 @@ public class Grid {
 		return false;
 	}
 	
+	/**
+	 * Return true if the specified tetris located at position (tx,ty) is touching a
+	 * block in the grid.
+	 * @param t: tetris
+	 * @param tx: x-position of tetris
+	 * @param ty: y-position of tetris
+	 * @return: boolean
+	 */
 	public boolean touchingBlock (Tetris t, int tx, int ty) {
 		for (int y = ty; y < ty + t.getWidth(); y++) {
 			for (int x = tx; x < tx +t.getWidth(); x++) {
@@ -102,6 +142,10 @@ public class Grid {
 		return false;
 	}
 	
+	/**
+	 * Turn the old tetris into regular blocks in the grid. Create a new tetris at the
+	 * top of the grid.
+	 */
 	public void newTetris () {
 		
 		// turn tetris into static blocks
@@ -120,24 +164,21 @@ public class Grid {
 		tetrisY = 0;
 		if (touchingBlock(tetris, tetrisX, tetrisY)) gameOver();
 	}
-	
-	public void step () {
-		
-		if (tetris == null) {
-			newTetris();
-			return;
-		}
-		
-		// drop it down one
-		if (touchingBlock(tetris, tetrisX, tetrisY+1)) gameOver();
-		if (touchingFloor(tetris, tetrisX, tetrisY+1)) newTetris();
-		else tetrisY++;
-		
-	}
-	
-	
+
+	/**
+	 * Freeze the grid so it does not respond to user actions.
+	 */
 	public void gameOver() {
 		throw new UnsupportedOperationException("game over not implemented");
 	}
+	
+
+	// Getters/setters.
+	// ------------------------------------------------------------
+	public Tetris getTetris() { return this.tetris; }
+	public int tetrisX() { return this.tetrisX; }
+	public int tetrisY() { return this.tetrisY; }
+
+
 	
 }

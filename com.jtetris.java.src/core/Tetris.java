@@ -4,8 +4,8 @@ import java.awt.Color;
 
 public class Tetris {
 
-	private boolean[][] grid;
-	private final Color color;
+	// Class fields.
+	// ------------------------------------------------------------
 	
 	private static final char[] types = new char[]{'I', 'J', 'L', 'O', 'S', 'T', 'Z'};
 	private static final Color[] colors = new Color[]{
@@ -18,9 +18,26 @@ public class Tetris {
 		new Color(180, 255, 250)
 	};
 	
+	// Instance fields.
+	// ------------------------------------------------------------
+	
+	private boolean[][] grid;
+	private final Color color;
+	
+	// Constructors.
+	// ------------------------------------------------------------
+	
 	private Tetris (Color col, boolean[][] grid){
 		this.color = col;
 		this.grid = grid;
+	}
+
+	/**
+	 * Create and return a random tetroid.
+	 * @return Tetris
+	 */
+	public static Tetris randomBlock () {
+		return new Tetris();
 	}
 	
 	private Tetris () {
@@ -82,6 +99,14 @@ public class Tetris {
 		}
 	}
 	
+	// Class methods.
+	// ------------------------------------------------------------
+	
+	/**
+	 * Return the rotation of a tetris to the left.
+	 * @param t: tetris to rotate.
+	 * @return: a new tetris, rotated left.
+	 */
 	public static Tetris RotateRight (Tetris t) {
 		boolean[][] grid = t.grid;
 		boolean[][] grid2 = new boolean[grid.length][grid[0].length];
@@ -94,6 +119,11 @@ public class Tetris {
 		return new Tetris(t.getColour(), grid2);
 	}
 	
+	/**
+	 * Return the rotation of a tetris to the right.
+	 * @param t: tetris to rotate.
+	 * @return: a new tetris, rotated right.
+	 */
 	public static Tetris RotateLeft (Tetris t) {
 		boolean[][] grid = t.grid;
 		boolean[][] grid2 = new boolean[grid.length][grid[0].length];
@@ -106,18 +136,36 @@ public class Tetris {
 		return new Tetris(t.getColour(), grid2);
 	}
 	
-	public static Tetris randomBlock () {
-		return new Tetris();
-	}
-	
-	public int getWidth() {
-		return this.grid.length;
-	}
 
+	// Instance methods.
+	// ------------------------------------------------------------
+
+	/**
+	 * Return true if the specified point in the bounding box around
+	 * the tetroid is part of the tetroid..
+	 * @param x: x position
+	 * @param y: y position
+	 * @return boolean
+	 */
 	public boolean touching (int x, int y) {
 		return this.grid[y][x];
 	}
 	
+	// Getters/setters.
+	// ------------------------------------------------------------
+	
+	/**
+	 * Return width of the bounding box around this tetroid.
+	 * @return int
+	 */
+	public int getWidth() {
+		return this.grid.length;
+	}
+
+	/**
+	 * Return the colour of this tetroid.
+	 * @return Color
+	 */
 	public Color getColour() {
 		return this.color;
 	}
