@@ -9,12 +9,12 @@ public class Tetris {
 	
 	private static final char[] types = new char[]{'I', 'J', 'L', 'O', 'S', 'T', 'Z'};
 	private static final Color[] colors = new Color[]{
-		new Color(255, 120, 130),
-		new Color(140, 200, 60),
-		new Color(0, 120, 190),
-		new Color(100, 150, 80),
-		new Color(200, 80, 180),
-		new Color(50, 180, 160),
+		new Color(95, 149, 207),
+		new Color(242, 163, 15),
+		new Color(196, 106, 196),
+		new Color(227, 221, 48),
+		new Color(92, 199, 54),
+		new Color(80, 204, 181),
 		new Color(180, 255, 250)
 	};
 	

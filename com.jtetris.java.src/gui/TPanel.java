@@ -30,11 +30,36 @@ public class TPanel extends JPanel {
 		return new TPanel(parent);
 	}
 	
+	private int getGhostTetris(Tetris t) {
+		
+		Grid g = grid();
+		int tx = g.tetrisX();
+		int ty = g.tetrisY();
+		
+		int i = 0;
+		
+		while (ty + i < g.GridHeight()
+				&& !g.touchingFloor(t, tx, ty+i)
+				&& !g.touchingBlock(t, tx, ty+i)) {
+			
+			if (i == 19) {
+				System.out.println("break");
+			}
+			i++;
+		
+		}
+		return ty + i - 1;
+		
+	}
+	
+	private Color lighter (Color col) {
+		return col.brighter().brighter();
+	}
+	
 	@Override
 	protected void paintComponent (Graphics g) {
 		if (g == null) return;
 
-		System.out.println("woah");
 		// draw blocks on the grid
 		for (int y = 0; y < Grid.GridHeight(); y++) {
 			for (int x = 0; x < Grid.GridWidth(); x++) {
@@ -49,10 +74,22 @@ public class TPanel extends JPanel {
 		// draw tetris if it exists
 		Tetris t = grid().getTetris();
 		if (t != null) {
+			
 			int x = grid().tetrisX();
 			int y = grid().tetrisY();
-			Color col = t.getColour();
-			g.setColor(col);
+			Color tetroidColour = t.getColour();
+			
+			// draw ghost tetris
+			int ghostY = getGhostTetris(t);
+			g.setColor(lighter(tetroidColour));
+			for (int j = ghostY; j < ghostY + t.getWidth(); j++){ 
+				for (int i = x; i < x + t.getWidth(); i++) {
+					if (t.touching(i-x, j-ghostY)) g.fillRect(i*CELL_WD, j*CELL_WD, CELL_WD, CELL_WD);
+				}
+			}
+			
+			// draw regular tetris
+			g.setColor(tetroidColour);
 			for (int j = y; j < y + t.getWidth(); j++) {
 				for (int i = x; i < x + t.getWidth(); i++) {
 					if (t.touching(i - x, j - y)) {
@@ -60,9 +97,11 @@ public class TPanel extends JPanel {
 					}
 				}
 			}
+
+			
 		}
 	
-		// draw outline
+		// draw outline of grid
 		g.setColor(Color.BLACK);
 		for (int y = 0; y < Grid.GridHeight(); y++) {
 			for (int x = 0; x < Grid.GridWidth(); x++) {
