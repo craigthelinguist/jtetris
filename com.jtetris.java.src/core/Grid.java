@@ -185,6 +185,9 @@ public class Grid {
 			}
 		}
 		
+		// keep clearing rows while there are rows to clear.
+		while (clearRow());
+		
 		// generate a new tetris
 		this.tetris = Tetris.randomBlock();
 		tetrisX = WIDTH/2 - tetris.getWidth()/2;
@@ -192,6 +195,42 @@ public class Grid {
 		if (touchingBlock(tetris, tetrisX, tetrisY)) gameOver();
 	}
 
+	/**
+	 * Starting from the bottom of the grid, move up looking for any complete rows. if you find a complete
+	 * row, clear it, shift everything down, and return true.
+	 * @return boolean: true if any rows were cleared
+	 */
+	private boolean clearRow () {
+		
+		outer: for (int row = HEIGHT-1; row >= 0; row--) {
+			
+			// check to see if this row is complete
+			for (int col = 0; col < WIDTH; col++) {
+				if (grid[row][col] == null) continue outer;
+			}
+			
+			// row is complete, so delete all the blocks in them
+			for (int col = 0; col < WIDTH; col++) {
+				grid[row][col] = null;
+			}
+			
+			// now apply gravity
+			for (int r = row - 1; r >= 0; r--) {
+				for (int col = 0; col < WIDTH; col++) {
+					if (grid[r+1][col] == null) {
+						grid[r+1][col] = grid[r][col];
+						grid[r][col] = null;
+					}
+				}
+			}
+			return true;
+			
+		}
+		
+		return false;
+	
+	}
+	
 	/**
 	 * Freeze the grid so it does not respond to user actions.
 	 */
