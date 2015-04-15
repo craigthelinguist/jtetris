@@ -14,18 +14,24 @@ public class Grid {
 
 	// Instance fields.
 	// ------------------------------------------------------------
-	private Color[][] grid;
+	private Game game;
+	
+ 	private Color[][] grid;
 	private Tetris tetris;
 	private int tetrisX;
 	private int tetrisY;
 
 
-	// Constructors.
+	// Constructors & configuration.
 	// ------------------------------------------------------------
 	public Grid () {
 		this.grid = new Color[HEIGHT][WIDTH];
 		this.tetris = null;
 		this.tetrisX = this.tetrisY = -1;
+	}
+	
+	public void attachTo (Game g) {
+		this.game = g;
 	}
 
 	
@@ -79,14 +85,14 @@ public class Grid {
 			break;
 		case SOFT_FALL:
 			if (touchingFloor(tetris, tetrisX, tetrisY+1) || touchingBlock(tetris, tetrisX, tetrisY+1)) {
-				newTetris();
+				dropTetris();
 			}
 			else tetrisY++;
 			break;
 		case HARD_FALL:
 			int ghostY = getGhostTetris();
 			this.tetrisY = ghostY;
-			newTetris();
+			dropTetris();
 			break;
 		default:
 			throw new RuntimeException("Unknown signal: " + s);
@@ -94,6 +100,15 @@ public class Grid {
 		
 	}
 
+	/**
+	 * Drop the tetris, update number of rows cleared.
+	 * @return
+	 */
+	private void dropTetris () {
+		int rowsCleared = newTetris();
+		this.game.updateLines(rowsCleared);
+	}
+	
 	/**
 	 * Return the y position of the tetris if you were to place it as close to the floor
 	 * as possible.
@@ -172,8 +187,9 @@ public class Grid {
 	/**
 	 * Turn the old tetris into regular blocks in the grid. Create a new tetris at the
 	 * top of the grid.
+	 * @return int: number of rows cleared
 	 */
-	public void newTetris () {
+	public int newTetris () {
 		
 		// turn tetris into static blocks
 		if (this.tetris != null) {
@@ -186,13 +202,16 @@ public class Grid {
 		}
 		
 		// keep clearing rows while there are rows to clear.
-		while (clearRow());
+		int rowsCleared = 0;
+		while (clearRow()) rowsCleared++;
 		
 		// generate a new tetris
 		this.tetris = Tetris.randomBlock();
 		tetrisX = WIDTH/2 - tetris.getWidth()/2;
 		tetrisY = 0;
 		if (touchingBlock(tetris, tetrisX, tetrisY)) gameOver();
+		
+		return rowsCleared;
 	}
 
 	/**

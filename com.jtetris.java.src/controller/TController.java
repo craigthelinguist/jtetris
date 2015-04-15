@@ -12,16 +12,12 @@ public class TController implements KeyListener {
 	private Grid grid;
 	private TFrame gui;	
 	
-	public TController (TFrame g) {
-		this.gui = g;
+	public void setGui (TFrame gui) {
+		this.gui = gui;
 	}
 	
 	public void setGrid (Grid g) {
 		this.grid = g;
-	}
-	
-	public void setGui (TFrame g) {
-		this.gui = g;
 	}
 	
 	@Override
@@ -32,7 +28,7 @@ public class TController implements KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent ke) {
-		if (this.grid == null) return;
+		if (this.grid == null || this.gui == null) return;
 		int code = ke.getKeyCode();
 		if (code == KeyEvent.VK_RIGHT) 		grid.userAction(Signal.RIGHT);
 		else if (code == KeyEvent.VK_LEFT)	grid.userAction(Signal.LEFT);

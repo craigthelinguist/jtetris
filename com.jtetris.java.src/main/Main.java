@@ -1,11 +1,14 @@
 package main;
 
+import core.Game;
 import gui.TFrame;
 
 public class Main {
 
 	public static void main (String[] args) {
-		TFrame.Make();
+		TFrame frame = TFrame.Make();
+		Game game = Game.newGame(frame);
+		game.startGame();
 	}
 	
 }
