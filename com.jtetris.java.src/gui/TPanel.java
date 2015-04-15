@@ -30,35 +30,13 @@ public class TPanel extends JPanel {
 		return new TPanel(parent);
 	}
 	
-	private int getGhostTetris(Tetris t) {
-		
-		Grid g = grid();
-		int tx = g.tetrisX();
-		int ty = g.tetrisY();
-		
-		int i = 0;
-		
-		while (ty + i < g.GridHeight()
-				&& !g.touchingFloor(t, tx, ty+i)
-				&& !g.touchingBlock(t, tx, ty+i)) {
-			
-			if (i == 19) {
-				System.out.println("break");
-			}
-			i++;
-		
-		}
-		return ty + i - 1;
-		
-	}
-	
 	/**
 	 * Return the same colour but several shades lighter.
 	 * @param col
 	 * @return a lighter Color.
 	 */
-	private Color lighter (Color col) {
-		return col.brighter().brighter();
+	private Color darker (Color col) {
+		return col.darker().darker();
 	}
 	
 	/**
@@ -108,7 +86,7 @@ public class TPanel extends JPanel {
 			Color tetroidColour = t.getColour();
 			
 			// draw ghost tetris
-			int ghostY = getGhostTetris(t);
+			int ghostY = grid().getGhostTetris();
 			drawTetrisAt(g, t, x, ghostY, lighter(tetroidColour));
 			
 			// draw regular tetris

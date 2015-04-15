@@ -84,10 +84,37 @@ public class Grid {
 			else tetrisY++;
 			break;
 		case HARD_FALL:
-			throw new UnsupportedOperationException("Haven't implemented " + s);
+			int ghostY = getGhostTetris();
+			this.tetrisY = ghostY;
+			newTetris();
+			break;
 		default:
 			throw new RuntimeException("Unknown signal: " + s);
 		}
+		
+	}
+
+	/**
+	 * Return the y position of the tetris if you were to place it as close to the floor
+	 * as possible.
+	 * @return; int, the y coordinate to the tetris after hard-dropping it.
+	 */
+	public int getGhostTetris() {
+		
+		// get current tetris and the position
+		Tetris t = this.getTetris();
+		int tx = tetrisX();
+		int ty = tetrisY();
+		
+		// move it down by one and check to see if it's colliding
+		// keep doing this while it's not colliding
+		int i = 0;
+		while (ty + i < GridHeight()
+				&& !touchingFloor(t, tx, ty+i)
+				&& !touchingBlock(t, tx, ty+i)) {
+			i++;
+		}
+		return ty + i - 1;
 		
 	}
 	
