@@ -87,7 +87,7 @@ public class TPanel extends JPanel {
 			
 			// draw ghost tetris
 			int ghostY = grid().getGhostTetris();
-			drawTetrisAt(g, t, x, ghostY, lighter(tetroidColour));
+			drawTetrisAt(g, t, x, ghostY, darker(tetroidColour));
 			
 			// draw regular tetris
 			drawTetrisAt(g, t, x, y, tetroidColour);
