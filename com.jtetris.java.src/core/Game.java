@@ -1,5 +1,8 @@
 package core;
 
+import java.awt.event.KeyEvent;
+import java.util.Collection;
+
 import controller.Signal;
 import controller.TController;
 import gui.TFrame;
@@ -51,13 +54,40 @@ public class Game {
 	 * @return: amount of time to wait in milliseconds.
 	 */
 	private int fallDelay() {
-		return Math.max(25, 1000-100*linesCleared);
+		return Math.max(25, 1000-10*linesCleared);
+	}
+	
+	private void handleInput() {
+		
+		// poll current key being pressed
+		Integer code = controller.getKeyPressed();
+		if (code == null) return;
+		
+		// check input delay on that key
+		long delay = controller.getInputDelay(code);
+		long lastTimePushed = controller.getLastInput(code);
+		if (System.currentTimeMillis() - lastTimePushed < delay) return;
+		
+		// map that key to the appropriate action
+		if (code == KeyEvent.VK_RIGHT) grid.userAction(Signal.RIGHT);
+		else if (code == KeyEvent.VK_LEFT) grid.userAction(Signal.LEFT);
+		else if (code == KeyEvent.VK_DOWN) grid.userAction(Signal.SOFT_FALL);
+		else if (code == KeyEvent.VK_SPACE) grid.userAction(Signal.HARD_FALL);
+		else if (code == KeyEvent.VK_X) grid.userAction(Signal.ROTATE_RIGHT);
+		else if (code == KeyEvent.VK_UP) grid.userAction(Signal.ROTATE_RIGHT);
+		else if (code == KeyEvent.VK_Z) grid.userAction(Signal.ROTATE_LEFT);
+		
+		// update when that key was last registered
+		controller.updateLastInput(code, System.currentTimeMillis());
+		
 	}
 	
 	/**
 	 * Start the new game running.
+	 * @throws InterruptedException 
 	 */
-	public void startGame () {
+	public void startGame()
+	throws InterruptedException {
 		
 		// set up game parameters, tell grid to drop a new tetris.
 		if (running) throw new IllegalStateException("Starting a game that's already running");
@@ -84,8 +114,14 @@ public class Game {
 			}
 			
 		};
-		
 		t.start();
+		
+		// game loop
+		while (running) {
+			handleInput();
+			frame.repaint();
+			Thread.sleep(50);
+		}
 		
 	}
 	
