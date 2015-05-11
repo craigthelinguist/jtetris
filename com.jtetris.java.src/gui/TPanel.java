@@ -12,24 +12,23 @@ import core.Grid;
 import core.Tetris;
 
 public class TPanel extends JPanel {
-	
+
 	private TFrame gui;
 	private static final int CELL_WD = 20;
-	
+
 	protected TPanel (TFrame parent) {
 		this.gui = parent;
 		this.setPreferredSize(new Dimension(CELL_WD * grid().GridWidth() + 1, CELL_WD * grid().GridHeight() + 1));
-		this.setVisible(true);
 	}
-	
+
 	public Grid grid() {
 		return gui.getGrid();
 	}
-	
+
 	public static TPanel Make (TFrame parent) {
 		return new TPanel(parent);
 	}
-	
+
 	/**
 	 * Return the same colour but several shades lighter.
 	 * @param col
@@ -38,7 +37,7 @@ public class TPanel extends JPanel {
 	private Color darker (Color col) {
 		return col.darker().darker();
 	}
-	
+
 	/**
 	 * Draw specified tetris at given position.
 	 * @param g: graphics object to draw onto.
@@ -55,14 +54,14 @@ public class TPanel extends JPanel {
 				if (t.touching(i-x, j-y)) g.fillRect(i*CELL_WD, j*CELL_WD, CELL_WD, CELL_WD);
 			}
 		}
-		
-		
+
+
 	}
-	
+
 	@Override
 	protected void paintComponent (Graphics g) {
 		if (g == null) return;
-		
+
 		// drawing constants
 		final int HT = Grid.GridHeight();
 		final int WD = Grid.GridWidth();
@@ -77,22 +76,22 @@ public class TPanel extends JPanel {
 				}
 			}
 		}
-		
+
 		// draw tetris if it exists
 		Tetris t = grid().getTetris();
 		if (t != null) {
 			int x = grid().tetrisX();
 			int y = grid().tetrisY();
 			Color tetroidColour = t.getColour();
-			
+
 			// draw ghost tetris
 			int ghostY = grid().getGhostTetris();
 			drawTetrisAt(g, t, x, ghostY, darker(tetroidColour));
-			
+
 			// draw regular tetris
 			drawTetrisAt(g, t, x, y, tetroidColour);
 		}
-	
+
 		// draw outline of grid
 		g.setColor(Color.BLACK);
 		for (int y = 0; y < HT; y++) {
@@ -100,8 +99,8 @@ public class TPanel extends JPanel {
 				g.drawRect(x*CELL_WD, y*CELL_WD, CELL_WD, CELL_WD);
 			}
 		}
-		
+
 	}
-	
-	
+
+
 }
