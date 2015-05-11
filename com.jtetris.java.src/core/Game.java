@@ -9,11 +9,14 @@ import gui.TFrame;
 
 public class Game {
 
+	private Thread threadGame;
+	private Thread threadDrop;
+
 	private TFrame frame;
 	private Grid grid;
 	private TController controller;
 
-	private boolean running = false;
+	private volatile boolean running = false;
 	private int linesCleared = 0;
 
 	private Game(TFrame frame, Grid grid, TController controller) {
@@ -65,31 +68,6 @@ public class Game {
 		return Math.max(25, 1000-10*linesCleared);
 	}
 
-	private void handleInput() {
-
-		// poll current key being pressed
-		Integer code = controller.getKeyPressed();
-		if (code == null) return;
-
-		// check input delay on that key
-		long delay = controller.getInputDelay(code);
-		long lastTimePushed = controller.getLastInput(code);
-		if (System.currentTimeMillis() - lastTimePushed < delay) return;
-
-		// map that key to the appropriate action
-		if (code == KeyEvent.VK_RIGHT) grid.userAction(Signal.RIGHT);
-		else if (code == KeyEvent.VK_LEFT) grid.userAction(Signal.LEFT);
-		else if (code == KeyEvent.VK_DOWN) grid.userAction(Signal.SOFT_FALL);
-		else if (code == KeyEvent.VK_SPACE) grid.userAction(Signal.HARD_FALL);
-		else if (code == KeyEvent.VK_X) grid.userAction(Signal.ROTATE_RIGHT);
-		else if (code == KeyEvent.VK_UP) grid.userAction(Signal.ROTATE_RIGHT);
-		else if (code == KeyEvent.VK_Z) grid.userAction(Signal.ROTATE_LEFT);
-
-		// update when that key was last registered
-		controller.updateLastInput(code, System.currentTimeMillis());
-
-	}
-
 	/**
 	 * Start the new game running.
 	 * @throws InterruptedException
@@ -105,10 +83,10 @@ public class Game {
 
 		// this thread will tell the controller to keep soft-dropping
 		// at an interval inversely proportional to the number of lines cleared.
-		Thread t = new Thread() {
+		this.threadDrop = new Thread() {
 			@Override
 			public void run() {
-				while (Game.this.running) {
+				while (running) {
 					try {
 						System.out.println(linesCleared);
 						grid.userAction(Signal.SOFT_FALL);
@@ -116,21 +94,67 @@ public class Game {
 						Thread.sleep(fallDelay());
 					}
 					catch (InterruptedException e) {
-						throw new IllegalStateException("Game thread was interrupted");
+						return;
 					}
 				}
 			}
 
 		};
-		t.start();
 
-		// game loop
-		while (running) {
-			handleInput();
-			frame.repaint();
-			Thread.sleep(50);
-		}
+		// this thread is the main game loop.
+		this.threadGame = new Thread() {
+			@Override
+			public void run() {
+				running = true;
+				while (running) {
+					handleInput();
+					frame.repaint();
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+						running = false;
+					}
+				}
+			}
 
+
+			private void handleInput() {
+
+				// poll current key being pressed
+				Integer code = controller.getKeyPressed();
+				if (code == null) return;
+
+				// check input delay on that key
+				long delay = controller.getInputDelay(code);
+				long lastTimePushed = controller.getLastInput(code);
+				if (System.currentTimeMillis() - lastTimePushed < delay) return;
+
+				// map that key to the appropriate action
+				if (code == KeyEvent.VK_RIGHT) grid.userAction(Signal.RIGHT);
+				else if (code == KeyEvent.VK_LEFT) grid.userAction(Signal.LEFT);
+				else if (code == KeyEvent.VK_DOWN) grid.userAction(Signal.SOFT_FALL);
+				else if (code == KeyEvent.VK_SPACE) grid.userAction(Signal.HARD_FALL);
+				else if (code == KeyEvent.VK_X) grid.userAction(Signal.ROTATE_RIGHT);
+				else if (code == KeyEvent.VK_UP) grid.userAction(Signal.ROTATE_RIGHT);
+				else if (code == KeyEvent.VK_Z) grid.userAction(Signal.ROTATE_LEFT);
+
+				// update when that key was last registered
+				controller.updateLastInput(code, System.currentTimeMillis());
+
+			}
+
+
+		};
+
+		this.threadGame.start();
+		this.threadDrop.start();
+
+	}
+
+	public synchronized void stopGame() {
+		this.threadDrop.interrupt();
+		this.threadGame.interrupt();
+		System.out.println("Game over, man.");
 	}
 
 }
