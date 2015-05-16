@@ -9,14 +9,15 @@ public class Tetris {
 	
 	private static final char[] types = new char[]{'I', 'J', 'L', 'O', 'S', 'T', 'Z'};
 	private static final Color[] colors = new Color[]{
-		new Color(95, 149, 207),
-		new Color(242, 163, 15),
-		new Color(196, 106, 196),
-		new Color(227, 221, 48),
-		new Color(92, 199, 54),
-		new Color(80, 204, 181),
-		new Color(180, 255, 250)
+		new Color(70, 140, 240),
+		new Color(255, 43, 43),
+		new Color(40, 220, 60),
+		new Color(255, 169, 48),
+		new Color(224, 96, 222),
+		new Color(79, 219, 194),
+		new Color(237, 237, 45)
 	};
+	private static final Color GhostColor = new Color(217, 252, 255);
 	
 	// Instance fields.
 	// ------------------------------------------------------------
@@ -142,7 +143,7 @@ public class Tetris {
 
 	/**
 	 * Return true if the specified point in the bounding box around
-	 * the tetroid is part of the tetroid..
+	 * the tetroid is part of the tetroid.
 	 * @param x: x position
 	 * @param y: y position
 	 * @return boolean
@@ -168,6 +169,10 @@ public class Tetris {
 	 */
 	public Color getColour() {
 		return this.color;
+	}
+	
+	public Color getGhostColour() {
+		return GhostColor;
 	}
 	
 }

@@ -15,6 +15,10 @@ public class TPanel extends JPanel {
 
 	private TFrame gui;
 	private static final int CELL_WD = 20;
+	private static final Color BG_COLOR = new Color(250, 249, 222);
+	private static final Color GRID_COLOR = new Color(145, 145, 145);
+	private static final Color DARKER_GRID_COLOR = Color.BLACK;
+	
 
 	protected TPanel (TFrame parent) {
 		this.gui = parent;
@@ -27,15 +31,6 @@ public class TPanel extends JPanel {
 
 	public static TPanel Make (TFrame parent) {
 		return new TPanel(parent);
-	}
-
-	/**
-	 * Return the same colour but several shades lighter.
-	 * @param col
-	 * @return a lighter Color.
-	 */
-	private Color darker (Color col) {
-		return col.darker().darker();
 	}
 
 	/**
@@ -54,9 +49,17 @@ public class TPanel extends JPanel {
 				if (t.touching(i-x, j-y)) g.fillRect(i*CELL_WD, j*CELL_WD, CELL_WD, CELL_WD);
 			}
 		}
-
-
 	}
+	private void outlineTetrisAt (Graphics g, Tetris t, int x, int y, Color col) {
+		final int WD = t.getWidth();
+		g.setColor(col);
+		for (int j = y; j < y + WD; j++) {
+			for (int i = x; i < x + WD; i++) {
+				if (t.touching(i-x, j-y)) g.drawRect(i*CELL_WD, j*CELL_WD, CELL_WD, CELL_WD);
+			}
+		}
+	}
+	
 
 	@Override
 	protected void paintComponent (Graphics g) {
@@ -77,6 +80,10 @@ public class TPanel extends JPanel {
 					g.setColor(col);
 					g.fillRect(x*CELL_WD, y*CELL_WD, CELL_WD, CELL_WD);
 				}
+				else {
+					g.setColor(BG_COLOR);
+					g.fillRect(x*CELL_WD, y*CELL_WD, CELL_WD, CELL_WD);
+				}
 			}
 		}
 
@@ -89,20 +96,30 @@ public class TPanel extends JPanel {
 
 			// draw ghost tetris
 			int ghostY = grid.getGhostTetris();
-			drawTetrisAt(g, t, x, ghostY, darker(tetroidColour));
+			drawTetrisAt(g, t, x, ghostY, t.getGhostColour());
 
 			// draw regular tetris
 			drawTetrisAt(g, t, x, y, tetroidColour);
 		}
 
 		// draw outline of grid
-		g.setColor(Color.BLACK);
+		g.setColor(GRID_COLOR);
 		for (int y = 0; y < HT; y++) {
 			for (int x = 0; x < WD; x++) {
 				g.drawRect(x*CELL_WD, y*CELL_WD, CELL_WD, CELL_WD);
 			}
 		}
 
+		// draw outline of tetroids
+		g.setColor(DARKER_GRID_COLOR);
+		for (int y = 0; y < HT; y++) {
+			for (int x = 0; x < WD; x++) {
+				if (grid.blockAt(x, y) == null) continue;
+				g.drawRect(x*CELL_WD, y*CELL_WD, CELL_WD, CELL_WD);
+			}
+		}
+		outlineTetrisAt(g, t, grid.tetrisX(), grid.tetrisY(), DARKER_GRID_COLOR);
+				
 	}
 
 
