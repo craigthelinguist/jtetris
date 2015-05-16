@@ -62,6 +62,9 @@ public class TPanel extends JPanel {
 	protected void paintComponent (Graphics g) {
 		if (g == null) return;
 
+		Grid grid = grid();
+		if (grid == null) return;
+		
 		// drawing constants
 		final int HT = Grid.GridHeight();
 		final int WD = Grid.GridWidth();
@@ -69,7 +72,7 @@ public class TPanel extends JPanel {
 		// draw blocks on the grid
 		for (int y = 0; y < HT; y++) {
 			for (int x = 0; x < WD; x++) {
-				Color col = grid().blockAt(x, y);
+				Color col = grid.blockAt(x, y);
 				if (col != null) {
 					g.setColor(col);
 					g.fillRect(x*CELL_WD, y*CELL_WD, CELL_WD, CELL_WD);
@@ -78,14 +81,14 @@ public class TPanel extends JPanel {
 		}
 
 		// draw tetris if it exists
-		Tetris t = grid().getTetris();
+		Tetris t = grid.getTetris();
 		if (t != null) {
-			int x = grid().tetrisX();
-			int y = grid().tetrisY();
+			int x = grid.tetrisX();
+			int y = grid.tetrisY();
 			Color tetroidColour = t.getColour();
 
 			// draw ghost tetris
-			int ghostY = grid().getGhostTetris();
+			int ghostY = grid.getGhostTetris();
 			drawTetrisAt(g, t, x, ghostY, darker(tetroidColour));
 
 			// draw regular tetris

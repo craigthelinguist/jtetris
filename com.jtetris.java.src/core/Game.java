@@ -16,7 +16,7 @@ public class Game {
 	private Grid grid;
 	private TController controller;
 
-	private volatile boolean running = false;
+	private boolean running = false;
 	private int linesCleared = 0;
 
 	private Game(TFrame frame, Grid grid, TController controller) {
@@ -65,15 +65,14 @@ public class Game {
 	 * @return: amount of time to wait in milliseconds.
 	 */
 	private int fallDelay() {
-		return Math.max(25, 1000-10*linesCleared);
+		
+		return Math.max(25, 1000-25*linesCleared);
 	}
 
 	/**
 	 * Start the new game running.
-	 * @throws InterruptedException
 	 */
-	public void startGame()
-	throws InterruptedException {
+	public void startGame() {
 
 		// set up game parameters, tell grid to drop a new tetris.
 		if (running) throw new IllegalStateException("Starting a game that's already running");
@@ -81,77 +80,64 @@ public class Game {
 		this.linesCleared = 0;
 		this.grid.newTetris();
 
-		// this thread will tell the controller to keep soft-dropping
-		// at an interval inversely proportional to the number of lines cleared.
-		this.threadDrop = new Thread() {
-			@Override
-			public void run() {
-				while (running) {
-					try {
-						System.out.println(linesCleared);
-						grid.userAction(Signal.SOFT_FALL);
-						frame.repaint();
-						Thread.sleep(fallDelay());
-					}
-					catch (InterruptedException e) {
-						return;
-					}
-				}
+		final int DRAW_UPDATE = 50;
+	
+		long lastFall = 0;
+		long lastUpdate = 0;
+		
+		while (running) {
+
+			long time = System.currentTimeMillis();
+			
+			if (time - lastFall > fallDelay()) {
+				grid.userAction(Signal.SOFT_FALL);
+				lastFall = time;
 			}
-
-		};
-
-		// this thread is the main game loop.
-		this.threadGame = new Thread() {
-			@Override
-			public void run() {
-				running = true;
-				while (running) {
-					handleInput();
-					frame.repaint();
-					try {
-						Thread.sleep(50);
-					} catch (InterruptedException e) {
-						running = false;
-					}
-				}
+			
+			if (time - lastUpdate > DRAW_UPDATE) {
+				handleInput();
+				frame.repaint();
+				lastUpdate = time;
 			}
-
-
-			private void handleInput() {
-
-				// poll current key being pressed
-				Integer code = controller.getKeyPressed();
-				if (code == null) return;
-
-				// check input delay on that key
-				long delay = controller.getInputDelay(code);
-				long lastTimePushed = controller.getLastInput(code);
-				if (System.currentTimeMillis() - lastTimePushed < delay) return;
-
-				// map that key to the appropriate action
-				if (code == KeyEvent.VK_RIGHT) grid.userAction(Signal.RIGHT);
-				else if (code == KeyEvent.VK_LEFT) grid.userAction(Signal.LEFT);
-				else if (code == KeyEvent.VK_DOWN) grid.userAction(Signal.SOFT_FALL);
-				else if (code == KeyEvent.VK_SPACE) grid.userAction(Signal.HARD_FALL);
-				else if (code == KeyEvent.VK_X) grid.userAction(Signal.ROTATE_RIGHT);
-				else if (code == KeyEvent.VK_UP) grid.userAction(Signal.ROTATE_RIGHT);
-				else if (code == KeyEvent.VK_Z) grid.userAction(Signal.ROTATE_LEFT);
-
-				// update when that key was last registered
-				controller.updateLastInput(code, System.currentTimeMillis());
-
-			}
-
-
-		};
-
-		this.threadGame.start();
-		this.threadDrop.start();
+			
+			
+		}
 
 	}
 
-	public synchronized void stopGame() {
+
+	/**
+	 * Handle user input.
+	 * @return true if there was any user input to do.
+	 */
+	private void handleInput() {
+
+		// poll current key being pressed
+		Integer code = controller.getKeyPressed();
+		if (code == null) return;
+
+		// check input delay on that key
+		long delay = controller.getInputDelay(code);
+		long lastTimePushed = controller.getLastInput(code);
+		if (System.currentTimeMillis() - lastTimePushed < delay) return;
+
+		// map that key to the appropriate action
+		if (code == KeyEvent.VK_RIGHT) grid.userAction(Signal.RIGHT);
+		else if (code == KeyEvent.VK_LEFT) grid.userAction(Signal.LEFT);
+		else if (code == KeyEvent.VK_DOWN) grid.userAction(Signal.SOFT_FALL);
+		else if (code == KeyEvent.VK_SPACE) grid.userAction(Signal.HARD_FALL);
+		else if (code == KeyEvent.VK_X) grid.userAction(Signal.ROTATE_RIGHT);
+		else if (code == KeyEvent.VK_UP) grid.userAction(Signal.ROTATE_RIGHT);
+		else if (code == KeyEvent.VK_Z) grid.userAction(Signal.ROTATE_LEFT);
+
+		// update when that key was last registered
+		controller.updateLastInput(code, System.currentTimeMillis());
+		return;
+		
+	}
+
+
+	public void stopGame() {
 		this.threadDrop.interrupt();
 		this.threadGame.interrupt();
 		System.out.println("Game over, man.");

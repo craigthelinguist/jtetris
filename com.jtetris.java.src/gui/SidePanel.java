@@ -22,7 +22,7 @@ public class SidePanel extends JPanel {
 	private SidePanel() {}
 
 	public static SidePanel MakeScorePanel(TFrame tframe) {
-		SidePanel sp = new SidePanel();
+		final SidePanel sp = new SidePanel();
 		sp.setPreferredSize(new Dimension(80,  tframe.getDimensions().width));
 
 		JButton button = new JButton("New Game");

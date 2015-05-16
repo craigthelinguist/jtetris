@@ -9,11 +9,7 @@ public class Main {
 		TFrame frame = TFrame.Make();
 		Game game = Game.newGame(frame);
 		frame.setGame(game);
-		try {
-			game.startGame();
-		} catch (InterruptedException e) {
-			throw new IllegalStateException("Game was interrupted.");
-		}
+		game.startGame();
 	}
 
 }

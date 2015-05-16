@@ -29,6 +29,9 @@ public class TFrame extends JFrame {
 		tframe.add(tframe.scorePanel, BorderLayout.EAST);
 		tframe.pack();
 		tframe.setVisible(true);
+		
+		tframe.tpanel.grabFocus();
+		tframe.tpanel.requestFocus();
 
 		return tframe;
 	}
@@ -47,7 +50,7 @@ public class TFrame extends JFrame {
 
 	public void setController (TController c) {
 		this.controller = c;
-		this.addKeyListener(c);
+		this.tpanel.addKeyListener(c);
 	}
 
 	public void setGrid (Grid g) {
