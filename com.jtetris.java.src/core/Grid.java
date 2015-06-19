@@ -20,6 +20,9 @@ public class Grid {
 	private Tetris tetris;
 	private int tetrisX;
 	private int tetrisY;
+	
+	private boolean canStore;
+	private Tetris storedTetris;
 
 
 	// Constructors & configuration.
@@ -28,6 +31,7 @@ public class Grid {
 		this.grid = new Color[HEIGHT][WIDTH];
 		this.tetris = null;
 		this.tetrisX = this.tetrisY = -1;
+		this.canStore = true;
 	}
 	
 	public void attachTo (Game g) {
@@ -168,6 +172,24 @@ public class Grid {
 	}
 	
 	/**
+	 * Return true if the specified tetris is inside the bounds of the grid.
+	 * @param t: tetris.
+	 * @param tx: x-position of tetris.
+	 * @param ty: y-position of tetris.
+	 * @return: boolean
+	 */
+	public boolean withinBounds (Tetris t, int tx, int ty) {
+		for (int y = ty; y < ty + t.getWidth(); y++) {
+			for (int x = tx; x < tx + t.getWidth(); x++) {
+				if (!t.touching(x - tx,  y - ty)) continue;
+				if (x < 0 || y < 0 || x >= this.GridWidth() || y >= this.GridHeight())
+					return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
 	 * Return true if the specified tetris located at position (tx,ty) is touching a
 	 * block in the grid.
 	 * @param t: tetris
@@ -210,6 +232,9 @@ public class Grid {
 		tetrisX = WIDTH/2 - tetris.getWidth()/2;
 		tetrisY = 0;
 		if (touchingBlock(tetris, tetrisX, tetrisY)) gameOver();
+	
+		// you can now store again
+		this.canStore = true;
 		
 		return rowsCleared;
 	}
@@ -256,14 +281,42 @@ public class Grid {
 	public void gameOver() {
 		throw new UnsupportedOperationException("game over not implemented");
 	}
-	
+
+	public void storeTetris() {
+		if (!this.canStore) return;
+		
+		System.out.println("store tetris");
+		
+		// if there's nothing in storage generate a new tetris.
+		if (this.storedTetris == null) {
+			this.storedTetris = this.tetris;
+			this.tetris = null;
+			newTetris();
+		}
+		
+		// if there's something in storage swap it out for the current tetris.
+		else {
+			
+			// need to check if pulling out the stored block will mean it is
+			// inside another block.
+			if (!(withinBounds(this.storedTetris, this.tetrisX, this.tetrisY))
+			    || touchingBlock(this.storedTetris, this.tetrisX, this.tetrisY))
+					return;
+				
+			Tetris temp = this.storedTetris;
+			this.storedTetris = this.tetris;
+			this.tetris = temp;
+		}
+		
+		this.canStore = false;
+		
+	}
+
 
 	// Getters/setters.
 	// ------------------------------------------------------------
 	public Tetris getTetris() { return this.tetris; }
 	public int tetrisX() { return this.tetrisX; }
 	public int tetrisY() { return this.tetrisY; }
-
-
 	
 }

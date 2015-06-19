@@ -21,7 +21,8 @@ public class TController implements KeyListener {
 	
 	private static int[] keyCodes = new int[]{
 		KeyEvent.VK_RIGHT, KeyEvent.VK_LEFT, KeyEvent.VK_SPACE,
-		KeyEvent.VK_Z, KeyEvent.VK_X, KeyEvent.VK_UP, KeyEvent.VK_DOWN
+		KeyEvent.VK_Z, KeyEvent.VK_X, KeyEvent.VK_UP, KeyEvent.VK_DOWN,
+		KeyEvent.VK_C
 	};
 	
 	public Map<Integer, Integer> inputDelay;

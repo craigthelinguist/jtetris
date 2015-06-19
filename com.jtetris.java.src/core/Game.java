@@ -115,6 +115,12 @@ public class Game {
 		// poll current key being pressed
 		Integer code = controller.getKeyPressed();
 		if (code == null) return;
+		
+		// check if it was the storage key
+		if (code == KeyEvent.VK_C) {
+			grid.storeTetris();
+			return;
+		}
 
 		// check input delay on that key
 		long delay = controller.getInputDelay(code);
