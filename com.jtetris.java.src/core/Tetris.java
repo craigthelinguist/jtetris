@@ -152,6 +152,17 @@ public class Tetris {
 		return this.grid[y][x];
 	}
 	
+	/**
+	 * Check if the given point (x,y) is within the bounding box of
+	 * the tetroid.
+	 * @param x: x position
+	 * @param y: y position
+	 * @return boolean
+	 */
+	public boolean withinBounds (int x, int y) {
+		return x >= 0 && y >= 0 && y < grid.length && x < grid[0].length;
+	}
+	
 	// Getters/setters.
 	// ------------------------------------------------------------
 	

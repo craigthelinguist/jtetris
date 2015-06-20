@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import controller.TController;
 import core.Game;
 import core.Grid;
+import core.Tetris;
 
 public class TFrame extends JFrame {
 
@@ -48,6 +49,10 @@ public class TFrame extends JFrame {
 		return this.tpanel.getPreferredSize();
 	}
 
+	protected Tetris getStorageTetris () {
+		return this.grid.getStoredTetris();
+	}
+	
 	public void setController (TController c) {
 		this.controller = c;
 		this.tpanel.addKeyListener(c);

@@ -1,15 +1,18 @@
 package gui;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import core.Game;
+import core.Grid;
+import core.Tetris;
 
 public class SidePanel extends JPanel {
 
@@ -18,39 +21,89 @@ public class SidePanel extends JPanel {
 
 	// components
 	private TFrame gui;
+	private JLabel labelLines;
+	private TetrisDisplay displayStorage;
 
-	private SidePanel() {}
+	private SidePanel(TFrame tframe) {
+		this.gui = tframe;
+		this.makeAndLayoutComponents();
+	}
 
 	public static SidePanel MakeScorePanel(TFrame tframe) {
-		final SidePanel sp = new SidePanel();
-		sp.setPreferredSize(new Dimension(80,  tframe.getDimensions().width));
+		return new SidePanel(tframe);
+	}
 
+	private void makeAndLayoutComponents () {
+
+		// create layout manager
+		GroupLayout layout = new GroupLayout(this);
+		this.setLayout(layout);
+		GroupLayout.SequentialGroup horizontal = layout.createSequentialGroup();
+		GroupLayout.SequentialGroup vertical = layout.createSequentialGroup();
+		layout.setHorizontalGroup(horizontal);
+		layout.setVerticalGroup(vertical);
+		layout.setAutoCreateContainerGaps(true);
+		layout.setAutoCreateGaps(true);
+
+		// new game button
 		JButton button = new JButton("New Game");
 		button.addActionListener(new ActionListener(){
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Game g = sp.gui.getGame();
+				Game g = gui.getGame();
 				if (g != null) {
 					g.stopGame();
 				}
 			}
-
 		});
 
-		sp.add(button, BorderLayout.NORTH);
-
-		sp.gui = tframe;
-		return sp;
+		// lines-cleared label
+		this.labelLines = new JLabel("Lines Cleared: 0");
+		
+		// stored tetris label
+		JLabel storedLabel = new JLabel("Stored Tetris");
+		
+		// storage display
+		this.displayStorage = TetrisDisplay.make();
+		
+		// add components in one column
+		horizontal.addGroup(
+			layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+				.addComponent(button)
+				.addComponent(labelLines)
+				.addComponent(storedLabel)
+				.addComponent(displayStorage)
+			);
+		
+		// add one row per component
+		vertical.addComponent(button);
+		vertical.addComponent(labelLines);
+		vertical.addComponent(storedLabel);
+		vertical.addComponent(displayStorage);
+		
+		// set size of side panel
+		final int WIDTH = (int) Math.max(labelLines.getPreferredSize().width * 1.2,
+										  button.getPreferredSize().width     * 1.2);
+		this.setPreferredSize(new Dimension(WIDTH, this.gui.getDimensions().width));
+		
 	}
-
+	
 	@Override
 	protected void paintComponent(Graphics g) {
 		Game game = this.gui.getGame();
 		if (game == null) return;
+	
+		// update components in the gui.
+		
+		// update number of lines cleared.
 		int score = game.linesCleared();
-		g.drawString("Lines", 10, 50);
-		g.drawString("" + score, 25, 65 );
+		this.labelLines.setText("Lines Cleared: " + score);
+		
+		// upgrade the block in storage.
+		Tetris stored = this.gui.getStorageTetris();
+		this.displayStorage.setTetris(stored);
+		
+		
 	}
 
 }

@@ -285,8 +285,6 @@ public class Grid {
 	public void storeTetris() {
 		if (!this.canStore) return;
 		
-		System.out.println("store tetris");
-		
 		// if there's nothing in storage generate a new tetris.
 		if (this.storedTetris == null) {
 			this.storedTetris = this.tetris;
@@ -316,6 +314,7 @@ public class Grid {
 	// Getters/setters.
 	// ------------------------------------------------------------
 	public Tetris getTetris() { return this.tetris; }
+	public Tetris getStoredTetris() { return this.storedTetris; }
 	public int tetrisX() { return this.tetrisX; }
 	public int tetrisY() { return this.tetrisY; }
 	
