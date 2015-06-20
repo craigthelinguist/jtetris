@@ -66,4 +66,8 @@ public class TFrame extends JFrame {
 		return this.grid;
 	}
 
+	public Tetris getNextTetris() {
+		return grid.getNextTetris();
+	}
+
 }

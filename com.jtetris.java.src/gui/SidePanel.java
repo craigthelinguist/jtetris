@@ -23,6 +23,7 @@ public class SidePanel extends JPanel {
 	private TFrame gui;
 	private JLabel labelLines;
 	private TetrisDisplay displayStorage;
+	private TetrisDisplay displayNext;
 
 	private SidePanel(TFrame tframe) {
 		this.gui = tframe;
@@ -66,6 +67,12 @@ public class SidePanel extends JPanel {
 		// storage display
 		this.displayStorage = TetrisDisplay.make();
 		
+		// next tetris label
+		JLabel nextTetrisLabel = new JLabel("Next Tetris");
+		
+		// next tetris display
+		this.displayNext = TetrisDisplay.make();
+		
 		// add components in one column
 		horizontal.addGroup(
 			layout.createParallelGroup(GroupLayout.Alignment.CENTER)
@@ -73,6 +80,8 @@ public class SidePanel extends JPanel {
 				.addComponent(labelLines)
 				.addComponent(storedLabel)
 				.addComponent(displayStorage)
+				.addComponent(nextTetrisLabel)
+				.addComponent(displayNext)
 			);
 		
 		// add one row per component
@@ -80,6 +89,8 @@ public class SidePanel extends JPanel {
 		vertical.addComponent(labelLines);
 		vertical.addComponent(storedLabel);
 		vertical.addComponent(displayStorage);
+		vertical.addComponent(nextTetrisLabel);
+		vertical.addComponent(displayNext);
 		
 		// set size of side panel
 		final int WIDTH = (int) Math.max(labelLines.getPreferredSize().width * 1.2,
@@ -103,6 +114,9 @@ public class SidePanel extends JPanel {
 		Tetris stored = this.gui.getStorageTetris();
 		this.displayStorage.setTetris(stored);
 		
+		// update the next block
+		Tetris next = this.gui.getNextTetris();
+		this.displayNext.setTetris(next);
 		
 	}
 

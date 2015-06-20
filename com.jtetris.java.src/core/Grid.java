@@ -23,7 +23,7 @@ public class Grid {
 	
 	private boolean canStore;
 	private Tetris storedTetris;
-
+	private Tetris nextTetris;
 
 	// Constructors & configuration.
 	// ------------------------------------------------------------
@@ -228,7 +228,9 @@ public class Grid {
 		while (clearRow()) rowsCleared++;
 		
 		// generate a new tetris
-		this.tetris = Tetris.randomBlock();
+		if (this.nextTetris == null) this.nextTetris = Tetris.randomBlock();
+		this.tetris = this.nextTetris;
+		this.nextTetris = Tetris.randomBlock();
 		tetrisX = WIDTH/2 - tetris.getWidth()/2;
 		tetrisY = 0;
 		if (touchingBlock(tetris, tetrisX, tetrisY)) gameOver();
@@ -315,6 +317,7 @@ public class Grid {
 	// ------------------------------------------------------------
 	public Tetris getTetris() { return this.tetris; }
 	public Tetris getStoredTetris() { return this.storedTetris; }
+	public Tetris getNextTetris() { return this.nextTetris; }
 	public int tetrisX() { return this.tetrisX; }
 	public int tetrisY() { return this.tetrisY; }
 	
