@@ -31,9 +31,9 @@ public class TFrame extends JFrame {
 		tframe.pack();
 		tframe.setVisible(true);
 		
-		tframe.tpanel.grabFocus();
-		tframe.tpanel.requestFocus();
-
+		// This is needed to correctly focus the panel.
+		tframe.setEnabled(true);
+		
 		return tframe;
 	}
 
@@ -68,6 +68,15 @@ public class TFrame extends JFrame {
 
 	public Tetris getNextTetris() {
 		return grid.getNextTetris();
+	}
+	
+	@Override
+	public void setEnabled (boolean toEnable) {
+		super.setEnabled(toEnable);
+		if (toEnable) {
+			this.tpanel.grabFocus();
+			this.tpanel.requestFocus();
+		}
 	}
 
 }

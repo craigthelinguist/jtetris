@@ -28,12 +28,16 @@ public class Grid {
 	// Constructors & configuration.
 	// ------------------------------------------------------------
 	public Grid () {
+		reset();
+	}
+	
+	public void reset () {
 		this.grid = new Color[HEIGHT][WIDTH];
 		this.tetris = null;
 		this.tetrisX = this.tetrisY = -1;
 		this.canStore = true;
 	}
-	
+
 	public void attachTo (Game g) {
 		this.game = g;
 	}
@@ -320,5 +324,5 @@ public class Grid {
 	public Tetris getNextTetris() { return this.nextTetris; }
 	public int tetrisX() { return this.tetrisX; }
 	public int tetrisY() { return this.tetrisY; }
-	
+
 }

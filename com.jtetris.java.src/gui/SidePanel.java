@@ -52,9 +52,7 @@ public class SidePanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Game g = gui.getGame();
-				if (g != null) {
-					g.stopGame();
-				}
+				if (g != null) g.restartGame();
 			}
 		});
 

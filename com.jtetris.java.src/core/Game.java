@@ -9,9 +9,6 @@ import gui.TFrame;
 
 public class Game {
 
-	private Thread threadGame;
-	private Thread threadDrop;
-
 	private TFrame frame;
 	private Grid grid;
 	private TController controller;
@@ -74,19 +71,16 @@ public class Game {
 	 */
 	public void startGame() {
 
-		// set up game parameters, tell grid to drop a new tetris.
+		// Restart the game.
 		if (running) throw new IllegalStateException("Starting a game that's already running");
-		this.running = true;
-		this.linesCleared = 0;
-		this.grid.newTetris();
-
+		restartGame();
+		
+		// Tick parameters.
 		final int DRAW_UPDATE = 50;
-	
 		long lastFall = 0;
 		long lastUpdate = 0;
 		
 		while (running) {
-
 			long time = System.currentTimeMillis();
 			
 			if (time - lastFall > fallDelay()) {
@@ -99,8 +93,6 @@ public class Game {
 				frame.repaint();
 				lastUpdate = time;
 			}
-			
-			
 		}
 
 	}
@@ -142,11 +134,18 @@ public class Game {
 		
 	}
 
-
-	public void stopGame() {
-		this.threadDrop.interrupt();
-		this.threadGame.interrupt();
-		System.out.println("Game over, man.");
+	/**
+	 * Resets lines cleared, clears the grid of everything, and sets the state of this Game
+	 * so it has a single tetris falling down the screen.
+	 */
+	public void restartGame() {
+		this.frame.setEnabled(false);
+		this.linesCleared = 0;
+		this.grid.reset();
+		this.grid.newTetris();
+		this.frame.setEnabled(true);
+		this.frame.setController(this.controller);
+		this.running = true;
 	}
 
 }
